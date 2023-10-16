@@ -7,9 +7,9 @@ const Header = () => {
   const path = usePathname();
   const routs = [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Pedidos", path: "/dashboard/pedidos" },
-    { name: "Almacen", path: "/dashboard/stock" },
+    { name: "Pedidos", path: "/dashboard/orders" },
     { name: "Menu", path: "/dashboard/menu" },
+    { name: "Almacen", path: "/dashboard/stock" },
   ];
   return (
     <>

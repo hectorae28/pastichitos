@@ -4,15 +4,13 @@ import { useState } from "react";
 
 const SignIn = () => {
   const [userInfo, setUserInfo] = useState({ email: "", password: "" });
-  const [error, setError] = useState(null)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await signIn("credentials", {
       email: userInfo.email,
       password: userInfo.password,
-      callbackUrl:'/dashboard'
-    });
-    setError(res.error)
+      callbackUrl:'/dashboard',
+    })
   };
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
@@ -71,12 +69,6 @@ const SignIn = () => {
                   Ingresar
                 </button>
               </form>
-              {error!==null&&<div
-                className="p-4 mt-5 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                role="alert"
-              >
-                <span className="font-medium">¡Error!</span> <br/>{error}
-              </div>}
             </div>
           </div>
         </div>

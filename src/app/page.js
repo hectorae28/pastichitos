@@ -1,5 +1,4 @@
-"use client";
-import { signIn } from "next-auth/react";
+import Link from "next/link";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10">
@@ -9,15 +8,14 @@ export default function Home() {
         </span>{" "}
         <br /> En Constuccion
       </h1>
-      <button
-        type="button"
-        onClick={() => {
-          signIn();
-        }}
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-      >
-        Admin
-      </button>
+      <Link href='/dashboard'>
+        <button
+          type="button"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
+          Admin
+        </button>
+      </Link>
     </main>
   );
 }
