@@ -21,7 +21,7 @@ export async function getData() {
       });
   });
 }
-
+export const fetchCache = 'force-no-store'
 const Almacen = async () => {
   try {
     const stock = await getData();

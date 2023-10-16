@@ -20,7 +20,7 @@ export async function getData(params) {
       });
   });
 }
-
+export const fetchCache = 'force-no-store'
 const Form = async ({ params }) => {
   try {
     const menu = await getData(params);
