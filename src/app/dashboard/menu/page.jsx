@@ -54,7 +54,7 @@ const getMinimalStockCombo=(products,stock)=>{
   })
   return Math.floor(min)
 }
-export const fetchCache = 'force-no-store'
+export const revalidate = 0
 const Menu = async () => {
   try {
     const menu = await getMenu();

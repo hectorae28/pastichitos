@@ -22,7 +22,7 @@ export async function getData() {
       });
   });
 }
-export const fetchCache = 'force-no-store'
+export const revalidate = 0
 const Pedidos = async() => {
   try {
     const orders = await getData()
