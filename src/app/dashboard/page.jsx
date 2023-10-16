@@ -37,7 +37,7 @@ export async function getStock() {
       });
   });
 }
-export const fetchCache = 'force-no-store'
+export const revalidate = 0
 const Dashboard = async () => {
   try {
     const orders = await getOrders();
