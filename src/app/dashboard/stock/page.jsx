@@ -28,7 +28,7 @@ const Almacen = async () => {
     return (
       <section>
         <div className="w-full flex flex-wrap justify-center items-center gap-10 p-10">
-          {stock !== "no data" &&
+          {stock !== "No data available" &&
             stock.map((item) => (
               <Link
                 className="w-full md:w-60"
@@ -55,7 +55,27 @@ const Almacen = async () => {
       </section>
     );
   } catch (error) {
-    console.error("Error al obtener los datos: ", error);
+    return (
+      <div className="mt-10 max-h-full items-center flex justify-center p-10">
+        <div className="relative w-full max-w-md max-h-full">
+          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div className="px-6 py-6 lg:px-8">
+              <div
+                className=" flex flex-col gap-3 p-4 mt-5 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
+              >
+                <span className="font-medium">¡Error!</span>
+                {error}
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        <Modal title='Crear Producto'>
+          <FormStock />
+        </Modal>
+      </div>
+    );
   }
 };
 export default Almacen;
