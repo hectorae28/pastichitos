@@ -7,7 +7,8 @@ import FormOrder from "./form";
 
 export async function getData() {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `orders/`))
+    const q = query(ref(db, 'orders/'), limitToLast(10));
+    get(q)
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
