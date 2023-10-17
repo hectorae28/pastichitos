@@ -1,5 +1,5 @@
 import { db } from "@/hooks/firebase";
-import { ref, child, get } from "firebase/database";
+import { ref, get, query, limitToLast } from "firebase/database";
 import { formatData } from "@/hooks/formatData";
 import Modal from "@/components/modal";
 import TableCrud from "@/components/tableCrud";
