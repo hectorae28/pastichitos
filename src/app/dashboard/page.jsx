@@ -1,5 +1,5 @@
 import { db } from "@/hooks/firebase";
-import { ref, child, get, limitToFirst } from "firebase/database";
+import { ref, child, get, query, limitToLast } from "firebase/database";
 import { formatData } from "@/hooks/formatData";
 import Modal from "@/components/modal";
 import TableCrud from "@/components/tableCrud";
@@ -7,7 +7,8 @@ import FormOrder from "./orders/form";
 
 export async function getOrders() {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `orders/`))
+    const q = query(ref(db, 'orders/'), limitToLast(10));
+    get(q)
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
@@ -48,7 +49,7 @@ const Dashboard = async () => {
           <TableCrud props={orders} />
         </section>
         <div className="flex flex-wrap justify-center items-start gap-10 px-5 lg:px-3">
-          {stock !== "no data" &&
+          {stock !== "No data available" &&
             stock.map((item) => (
               <div
                 className="w-full md:w-48"
@@ -77,7 +78,26 @@ const Dashboard = async () => {
       </div>
     );
   } catch (error) {
-    console.error(error);
+    return (
+      <div className="mt-10 max-h-full items-center flex justify-center p-10">
+        <div className="relative w-full max-w-md max-h-full">
+          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div className="px-6 py-6 lg:px-8">
+              <div
+                className=" flex flex-col gap-3 p-4 mt-5 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
+              >
+                <span className="font-medium">¡Error!</span>
+                {error}
+              </div>
+            </div>
+          </div>
+        </div>
+        <Modal title="Nuevo Pedido">
+          <FormOrder />
+        </Modal>
+      </div>
+    );
   }
 };
 export default Dashboard;

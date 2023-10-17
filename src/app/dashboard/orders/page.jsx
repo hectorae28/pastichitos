@@ -1,5 +1,5 @@
 import { db } from "@/hooks/firebase";
-import { ref, child, get } from "firebase/database";
+import { ref, get, query, limitToLast } from "firebase/database";
 import { formatData } from "@/hooks/formatData";
 import Modal from "@/components/modal";
 import TableCrud from "@/components/tableCrud";
@@ -7,7 +7,8 @@ import FormOrder from "./form";
 
 export async function getData() {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `orders/`))
+    const q = query(ref(db, 'orders/'), limitToLast(10));
+    get(q)
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
