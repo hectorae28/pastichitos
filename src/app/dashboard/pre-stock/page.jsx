@@ -1,13 +1,13 @@
 import { db } from "@/hooks/firebase";
 import { ref, child, get } from "firebase/database";
 import { formatData } from "@/hooks/formatData";
-import Modal from "@/components/modal";
-import FormMenu from "./formMenu";
 import Link from "next/link";
+import Modal from "@/components/modal";
+import { FormStock } from "./formStock";
 
-export async function getMenu() {
+export async function getData() {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `menu/`))
+    get(child(ref(db), `pre-stock/`))
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
@@ -21,69 +21,38 @@ export async function getMenu() {
       });
   });
 }
-export async function getStock() {
-  return new Promise((resolve, reject) => {
-    get(child(ref(db), `stock/`))
-      .then((snapshot) => {
-        const data = snapshot.val();
-        if (snapshot.exists()) {
-          resolve(data);
-        } else {
-          reject("No data available");
-        }
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
-
-const getMinimalStockCombo = (products, stock) => {
-  let min = Infinity;
-  for (const item of products) {
-    if (stock[item.id].cantidad === 0) {
-      return 0;
-    }
-    const ratio = stock[item.id].cantidad / item.count;
-    if (ratio < min) {
-      min = ratio;
-    }
-  }
-  return Math.floor(min);
-};
-export const revalidate = 0;
-const Menu = async () => {
+export const revalidate = 0
+const Almacen = async () => {
   try {
-    const menu = await getMenu();
-    //const stock = await getStock();
-    //
+    const stock = await getData();
     return (
-      <>
+      <section>
         <div className="w-full flex flex-wrap justify-center items-center gap-10 p-10">
-          {menu !== "No data available" &&
-            menu.map((item,index) => (
+          {stock !== "No data available" &&
+            stock.map((item) => (
               <Link
                 className="w-full md:w-60"
-                href={"/dashboard/menu/" + item.id}
-                key={index}
+                href={"/dashboard/pre-stock/" + item.id}
+                key={item.id}
               >
-                {/* getMinimalStockCombo(formatData(item.products), stock) */}
                 <div className="sm:w-60 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                  <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {item.name}{" "}
+                  <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {item.nombre}{" "}
                     <span className="font-normal text-gray-700 dark:text-gray-400 text-sm">
-                      {item.price}$
+                      {item.peso}
                     </span>
-                  </h2>
+                  </h5>
+                  <p className="tracking-tight text-gray-900 dark:text-white text-3xl">
+                    {item.cantidad}
+                  </p>
                 </div>
               </Link>
             ))}
         </div>
-        <Modal title="Crear Menu">
-          <FormMenu />
+        <Modal title='Crear Producto'>
+          <FormStock />
         </Modal>
-      </>
+      </section>
     );
   } catch (error) {
     return (
@@ -97,15 +66,16 @@ const Menu = async () => {
               >
                 <span className="font-medium">¡Error!</span>
                 {error}
+                
               </div>
             </div>
           </div>
         </div>
-        <Modal title="Nuevo Menu">
-          <FormMenu />
+        <Modal title='Crear Producto'>
+          <FormStock />
         </Modal>
       </div>
     );
   }
 };
-export default Menu;
+export default Almacen;

@@ -10,6 +10,7 @@ const Header = () => {
     { name: "Pedidos", path: "/dashboard/orders" },
     { name: "Menu", path: "/dashboard/menu" },
     { name: "Almacen", path: "/dashboard/stock" },
+    { name: "Almacen Pre-Produccion", path: "/dashboard/pre-stock" },
   ];
   return (
     <>
