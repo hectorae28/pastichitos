@@ -244,7 +244,6 @@ export function FormStock({
 export function ProductionStock({ props }) {
   const { id, cantidad, products } = props;
   const [stock, setStock] = useState({ id, cantidadSuma: "", products });
-  console.log({stock});
   const [error, setError] = useState(null);
   const [preStock, setPreStock] = useState([]);
   const router = useRouter();
@@ -253,7 +252,7 @@ export function ProductionStock({ props }) {
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
-          setPreStock(formatData(data));
+          setPreStock(data);
         } else {
           reject("No data available");
         }
@@ -263,39 +262,48 @@ export function ProductionStock({ props }) {
       });
   }, []);
 
-  const validatePreStock = (stockProducts, preStock) => {
-    return new Promise((resolve, reject) => {
-      const result = {};
-      formatData(stockProducts).map((productItem) => {
-        result[productItem.id] = {
-          ...productItem,
-          totalOrderCount: productItem.cantidad,
-        };
-        console.log({ productItem });
-      });
-      /* formatData(stockProducts).map((productItem) => {
-        if (productItem.cantidad > preStock[productItem.id].cantidad) {
-          reject("no hay suficiente Stock");
-        }
-      }); */
-      resolve(formatData(result));
-    });
+  const validatePreStock = async (stockProducts, preStock) => {
+    const result = formatData(stockProducts).map((productItem) => ({
+      ...productItem,
+      totalProductCount: productItem.count * stock.cantidadSuma,
+    }));
+
+    for (const productItem of result) {
+      if (productItem.totalProductCount > preStock[productItem.id].cantidad) {
+        setError("no hay suficiente Stock, Recuerde a reabastecer el stock");
+      }
+    }
+
+    return formatData(result);
   };
   const handleProduction = async (e) => {
     e.preventDefault();
-    validatePreStock(stock.products, preStock).then((data) => {
-      console.log({ data });
-    })
-    /*   const totalCount = parseInt(cantidad) + parseInt(stock.cantidadSuma);
+    const stockProducts = await validatePreStock(stock.products, preStock);
+    const totalCount = Number(cantidad) + Number(stock.cantidadSuma);
     update(ref(db, `stock/${stock.id}`), {
-      cantidad: parseInt(totalCount),
+      cantidad: Number(totalCount),
     })
       .then(() => {
+        for (const productItem of stockProducts) {
+          if (
+            productItem.totalProductCount > preStock[productItem.id].cantidad
+          ) {
+            update(ref(db, `pre-stock/${productItem.id}`), {
+              cantidad: 0,
+            });
+          } else {
+            update(ref(db, `pre-stock/${productItem.id}`), {
+              cantidad:
+                preStock[productItem.id].cantidad -
+                productItem.totalProductCount,
+            });
+          }
+        }
         router.push("/dashboard/stock?showDialog=n");
       })
       .catch((error) => {
         setError(error);
-      }); */
+      });
   };
 
   return (
