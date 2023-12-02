@@ -60,7 +60,7 @@ const Menu = async () => {
     //
     return (
       <>
-        <div className="w-full flex flex-wrap justify-center items-center gap-10 p-10">
+        <div className="w-full h-[90vh] flex flex-wrap justify-center items-flex-start gap-10 p-10">
           {menu !== "No data available" &&
             menu.map((item,index) => (
               <Link

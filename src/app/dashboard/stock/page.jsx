@@ -27,7 +27,7 @@ const Almacen = async () => {
     const stock = await getData();
     return (
       <section>
-        <div className="w-full flex flex-wrap justify-center items-center gap-10 p-10">
+        <div className="w-full h-[90vh] flex flex-wrap justify-center items-flex-start gap-10 p-10">
           {stock !== "No data available" &&
             stock.map((item) => (
               <Link
@@ -42,7 +42,10 @@ const Almacen = async () => {
                       {item.peso}
                     </span>
                   </h5>
-                  <p className="tracking-tight text-gray-900 dark:text-white text-3xl">
+                  <p 
+                  className={item.cantidad<10
+                    ?"tracking-tight text-red-600 dark:text-red-600 text-3xl"
+                    :"tracking-tight text-gray-900 dark:text-white text-3xl"}>
                     {item.cantidad}
                   </p>
                 </div>
