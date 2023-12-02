@@ -3,11 +3,11 @@ import { ref, child, get } from "firebase/database";
 import { formatData } from "@/hooks/formatData";
 import Link from "next/link";
 import Modal from "@/components/modal";
-import { FormStock } from "@/app/dashboard/stock/formStock";
+import { FormStock } from "./formStock";
 
 export async function getData() {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `stock/`))
+    get(child(ref(db), `pre-stock/`))
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
@@ -32,7 +32,7 @@ const Almacen = async () => {
             stock.map((item) => (
               <Link
                 className="w-full md:w-60"
-                href={"/dashboard/stock/" + item.id}
+                href={"/dashboard/pre-stock/" + item.id}
                 key={item.id}
               >
                 <div className="sm:w-60 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">

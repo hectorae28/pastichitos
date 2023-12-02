@@ -1,78 +1,23 @@
 "use client";
-import { push, ref, set, update, get, child } from "firebase/database";
+import { push, ref, set, update } from "firebase/database";
 import { db } from "@/hooks/firebase";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { formatData } from "@/hooks/formatData";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function FormStock({
-  props = { id: "", nombre: "", peso: "", cantidad: "", products: [] },
+  props = { id: "", nombre: "", peso: "", cantidad: '' },
 }) {
-  const { id, nombre, peso, cantidad, products } = props;
-  const [stock, setStock] = useState({ id, nombre, peso, cantidad, products });
-  const [preStock, setPreStock] = useState([]);
+  const { id, nombre, peso, cantidad } = props;
+  const [stock, setStock] = useState({ id, nombre, peso, cantidad });
   const [error, setError] = useState(null);
   const router = useRouter();
-  useEffect(() => {
-    get(child(ref(db), `pre-stock/`))
-      .then((snapshot) => {
-        const data = snapshot.val();
-        if (snapshot.exists()) {
-          setPreStock(formatData(data));
-        } else {
-          reject("No data available");
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
-  const validatePreStock = (stockProducts, preStock) => {
-    return new Promise((resolve, reject) => {
-      /* const result = {};
-      stockProducts.map((productItem) => {
-        result[productItem.id] = {
-          ...productItem,
-          totalOrderCount: productItem.cantidad,
-        };
-      }); */
-      formatData(stockProducts).map((productItem) => {
-        if (productItem.cantidad > preStock[productItem.id].cantidad) {
-          reject("no hay suficiente Stock");
-        }
-      });
-      resolve(formatData(stockProducts));
-    });
-  };
-  const handleSelected = (id, name, isChecked) => {
-    if (isChecked == false) {
-      const newState = { ...stock.products };
-      delete newState[id];
-      setStock((prevState) => ({
-        ...prevState,
-        products: { ...newState },
-      }));
-    } else {
-      setStock((prevState) => ({
-        ...prevState,
-        products: {
-          ...prevState.products,
-          [id]: {
-            name,
-            count: isChecked == true ? isChecked : parseInt(isChecked),
-          },
-        },
-      }));
-    }
-  };
   const handleUpdate = (e) => {
     e.preventDefault();
-    set(ref(db, `stock/${stock.id}`), {
+    set(ref(db, `pre-stock/${stock.id}`), {
       nombre: stock.nombre,
       peso: stock.peso,
       cantidad: parseInt(stock.cantidad),
-      products: stock.products,
     })
       .then(() => {
         router.push("/dashboard/stock?showDialog=n");
@@ -83,15 +28,14 @@ export function FormStock({
   };
   const handleCreate = (e) => {
     e.preventDefault();
-    push(ref(db, "stock/"), {
+    push(ref(db, "pre-stock/"), {
       nombre: stock.nombre,
       peso: stock.peso,
       cantidad: parseInt(stock.cantidad),
-      products: stock.products,
     })
       .then(() => {
-        setStock({ id: "", nombre: "", peso: "", cantidad: "" });
-        router.replace(`/dashboard/stock?showDialog=${Math.random() * 10}`);
+        setStock({ id: "", nombre: "", peso: "", cantidad: '' })
+        router.replace(`/dashboard/pre-stock?showDialog=${Math.random()*10}`);
       })
       .catch((error) => {
         setError(error);
@@ -138,7 +82,7 @@ export function FormStock({
             htmlFor="peso"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
-            Peso
+            Peso o Tamaño
           </label>
         </div>
         <div className="relative z-0 w-full mb-6 group">
@@ -147,7 +91,7 @@ export function FormStock({
             name="cantidad"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
-            min="0"
+            min='0'
             value={stock.cantidad}
             onChange={({ target }) =>
               setStock({ ...stock, cantidad: target.value })
@@ -155,63 +99,11 @@ export function FormStock({
             required
           />
           <label
-            htmlFor="peso"
+            htmlFor="cantidad"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
-            Cantidad
+            Cantidad 
           </label>
-        </div>
-        <div className="relative z-0 w-full mb-6 group">
-          {preStock !== "no data" &&
-            preStock?.map((item, index) => (
-              <div
-                key={index}
-                className=" p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-              >
-                <input
-                  type="checkbox"
-                  className="w-4 mr-5 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  checked={
-                    stock.products !== undefined
-                      ? stock.products[item.id]
-                      : false
-                  }
-                  onChange={(e) =>
-                    handleSelected(
-                      item.id,
-                      item.nombre,
-                      e.target.checked == true ? 1 : false
-                    )
-                  }
-                />
-                <label className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  {item.nombre}{" "}
-                  <span className="font-normal text-gray-700 dark:text-gray-400 text-sm">
-                    {item.peso}
-                  </span>
-                </label>
-                <br />
-                {stock.products[item.id] ? (
-                  <input
-                    type="number"
-                    className=" mt-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Cantidad"
-                    value={stock.products[item.id].count}
-                    min={1}
-                    onChange={(e) =>
-                      handleSelected(
-                        item.id,
-                        item.nombre,
-                        parseInt(e.target.value)
-                      )
-                    }
-                    required
-                  />
-                ) : (
-                  ""
-                )}
-              </div>
-            ))}
         </div>
         <button
           type="submit"
@@ -241,71 +133,24 @@ export function FormStock({
   );
 }
 
-export function ProductionStock({ props }) {
-  const { id, cantidad, products } = props;
-  const [stock, setStock] = useState({ id, cantidadSuma: "", products });
+export function ProductionStock({props}){
+  const {id,cantidad}= props
+  const [stock, setStock] = useState({ id, cantidadSuma:'' });
   const [error, setError] = useState(null);
-  const [preStock, setPreStock] = useState([]);
   const router = useRouter();
-  useEffect(() => {
-    get(child(ref(db), `pre-stock/`))
-      .then((snapshot) => {
-        const data = snapshot.val();
-        if (snapshot.exists()) {
-          setPreStock(data);
-        } else {
-          reject("No data available");
-        }
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
-
-  const validatePreStock = async (stockProducts, preStock) => {
-    const result = formatData(stockProducts).map((productItem) => ({
-      ...productItem,
-      totalProductCount: productItem.count * stock.cantidadSuma,
-    }));
-
-    for (const productItem of result) {
-      if (productItem.totalProductCount > preStock[productItem.id].cantidad) {
-        setError("no hay suficiente Stock, Recuerde a reabastecer el stock");
-      }
-    }
-
-    return formatData(result);
-  };
-  const handleProduction = async (e) => {
+  const handleProduction = (e) => {
     e.preventDefault();
-    const stockProducts = await validatePreStock(stock.products, preStock);
-    const totalCount = Number(cantidad) + Number(stock.cantidadSuma);
-    update(ref(db, `stock/${stock.id}`), {
-      cantidad: Number(totalCount),
+    const totalCount=parseInt(cantidad) + parseInt(stock.cantidadSuma)
+    update(ref(db, `pre-stock/${stock.id}`), {
+      cantidad: parseInt(totalCount),
     })
       .then(() => {
-        for (const productItem of stockProducts) {
-          if (
-            productItem.totalProductCount > preStock[productItem.id].cantidad
-          ) {
-            update(ref(db, `pre-stock/${productItem.id}`), {
-              cantidad: 0,
-            });
-          } else {
-            update(ref(db, `pre-stock/${productItem.id}`), {
-              cantidad:
-                preStock[productItem.id].cantidad -
-                productItem.totalProductCount,
-            });
-          }
-        }
-        router.push("/dashboard/stock?showDialog=n");
+        router.push("/dashboard/pre-stock?showDialog=n");
       })
       .catch((error) => {
         setError(error);
       });
   };
-
   return (
     <>
       <form
@@ -318,7 +163,7 @@ export function ProductionStock({ props }) {
             name="cantidad"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
-            min="0"
+            min='0'
             value={stock.cantidadSuma}
             onChange={({ target }) =>
               setStock({ ...stock, cantidadSuma: target.value })

@@ -28,7 +28,7 @@ const Pedidos = async () => {
     const orders = await getData();
     //console.log(orders)
     return (
-      <div className=" lg:py-10 flex w-full flex-col justify-center items-center">
+      <div className=" lg:py-10 flex w-full h-[90vh] flex-col justify-flex-start items-center">
         <div className=" w-full lg:w-3/5">
           <TableCrud props={orders} />
         </div>

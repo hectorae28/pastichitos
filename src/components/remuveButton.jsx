@@ -6,7 +6,7 @@ export default function RemuveButton({parent,id}) {
   const router=useRouter()
   const handleRemove =()=>{
     remove(child(ref(db,`${parent}`),`${id}`))
-    router.push(`/dashboard/${parent}?showDialog=n`)
+    router.back()
   }
   return (
     <button

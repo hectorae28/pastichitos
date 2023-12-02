@@ -10,12 +10,13 @@ const Header = () => {
     { name: "Pedidos", path: "/dashboard/orders" },
     { name: "Menu", path: "/dashboard/menu" },
     { name: "Almacen", path: "/dashboard/stock" },
+    { name: "Almacen Pre-Produccion", path: "/dashboard/pre-stock" },
   ];
   return (
     <>
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
         <h1 className="m-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+          <span className="text-[#ffc700]">
             Pastichitos
           </span>
         </h1>

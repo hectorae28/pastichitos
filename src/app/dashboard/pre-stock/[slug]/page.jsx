@@ -1,12 +1,12 @@
 import { ref, child, get } from "firebase/database";
 import { db } from "@/hooks/firebase";
 import RemuveButton from "@/components/remuveButton";
-import { FormStock, ProductionStock } from "../formStock";
+import {FormStock, ProductionStock} from "../formStock";
 import Link from "next/link";
 
 export async function getData(params) {
   return new Promise((resolve, reject) => {
-    get(child(ref(db), `stock/${params.slug}`))
+    get(child(ref(db), `pre-stock/${params.slug}`))
       .then((snapshot) => {
         const data = snapshot.val();
         if (snapshot.exists()) {
@@ -20,11 +20,10 @@ export async function getData(params) {
       });
   });
 }
-export const revalidate = 0;
+export const revalidate = 0
 const Form = async ({ params }) => {
   try {
     const stock = await getData(params);
-    console.log(stock.nombre);
 
     return (
       <div className="mt-10 max-h-full items-center flex flex-wrap justify-center p-10 gap-10">
@@ -37,13 +36,7 @@ const Form = async ({ params }) => {
                 </h3>
                 <RemuveButton parent="stock" id={params?.slug} />
               </div>
-              <FormStock
-                props={{
-                  ...stock,
-                  id: params.slug,
-                  products: stock.products ? stock.products : [],
-                }}
-              />
+              <FormStock props={{ id: params.slug, ...stock }} />
             </div>
           </div>
         </div>
@@ -55,14 +48,7 @@ const Form = async ({ params }) => {
                   Sumar Produccion
                 </h3>
               </div>
-              <ProductionStock
-                props={{
-                  id: params.slug,
-                  cantidad: stock.cantidad,
-                  ...stock,
-                  products: stock.products ? stock.products : [],
-                }}
-              />
+              <ProductionStock props={{ id: params.slug, cantidad:stock.cantidad }} />
             </div>
           </div>
         </div>
